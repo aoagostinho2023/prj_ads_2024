@@ -1,0 +1,87 @@
+{% extends 'pages/base.html' %} {% load static %} {% block conteudo %}
+<div style="text-align: center" class="container">
+  <img
+    src="{% static 'images/nutrition.png' %}"
+    alt="Nutri Pyramid"
+    style="width: 8%; height: auto"
+  />
+  <h1>Bem-vindo ao Nutrimax</h1>
+  <h3>Seu assistente nutricional</h3>
+  <p>
+    Cadastre os dados do usuário abaixo ou, caso o usuário já seja cadastrado,
+    pule esta etapa
+  </p>
+</div>
+
+<!-- Formulario -->
+<form action="{% url 'listagem_usuarios' %}" method="post">
+  {% csrf_token %}
+  <div class="container">
+    <div class="row">
+      <!-- Coluna da esquerda -->
+      <div class="col-md-6">
+        <div class="form-group">
+          Nome
+          <input name="nome" class="form-control-sm form-control" type="text" />
+        </div>
+        <div class="form-group">
+          Idade
+          <input
+            name="idade"
+            class="form-control-sm form-control"
+            type="text"
+          />
+        </div>
+        <div class="form-group">
+          Sexo
+          <input name="sexo" class="form-control-sm form-control" type="text" />
+        </div>
+        <div class="form-group">
+          Nível de atividade
+          <input
+            name="atividade"
+            class="form-control-sm form-control"
+            type="text"
+          />
+        </div>
+      </div>
+
+      <!-- Coluna da direita -->
+      <div class="col-md-6">
+        <div class="form-group">
+          Altura
+          <input
+            name="altura"
+            class="form-control-sm form-control"
+            type="text"
+          />
+        </div>
+        <div class="form-group">
+          Peso
+          <input name="peso" class="form-control-sm form-control" type="text" />
+        </div>
+        <div class="form-group">
+          Objetivo
+          <input
+            name="objetivo"
+            class="form-control-sm form-control"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão Enviar ao centro -->
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <button class="btn btn-info mt-3">Enviar</button>
+        <a href="{% url 'base_usuarios' %}" class="btn btn-secondary mt-3 ml-2"
+          >Pular</a
+        >
+      </div>
+    </div>
+  </div>
+</form>
+<!-- Fim do Formulario -->
+
+{% endblock %}

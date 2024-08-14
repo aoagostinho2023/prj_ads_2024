@@ -1,0 +1,35 @@
+{% extends 'pages/base.html' %} {% load static %} {% block conteudo %}
+<div class="container">
+  <h1 style="text-align: center">Base de usuários</h1>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Matrícula</th>
+      <th>Nome</th>
+      <th>Idade</th>
+      <th>Sexo</th>
+      <th>Altura</th>
+      <th>Peso</th>
+      <th>Nível de Atividade</th>
+      <th>Objetivo</th>
+      <th>IMC</th>
+      <th>Enquadramento do IMC</th>
+      <th>Gasto Calórico Diário</th>
+    </tr>
+    {% for usuario in usuarios %}
+    <tr>
+      <td>{{usuario.id_usuario}}</td>
+      <td>{{usuario.nome}}</td>
+      <td>{{usuario.idade}}</td>
+      <td>{{usuario.sexo}}</td>
+      <td>{{usuario.altura}}</td>
+      <td>{{usuario.peso}}</td>
+      <td>{{usuario.atividade}}</td>
+      <td>{{usuario.objetivo}}</td>
+      <td>{{usuario.imc}}</td>
+      <td>{{usuario.imc_stat}}</td>
+      <td>{{usuario.tmb}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
