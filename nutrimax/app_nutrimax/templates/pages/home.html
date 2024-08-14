@@ -22,7 +22,12 @@
       <div class="col-md-6">
         <div class="form-group">
           Nome
-          <input name="nome" class="form-control-sm form-control" type="text" />
+          <input
+            name="nome"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
         </div>
         <div class="form-group">
           Idade
@@ -30,51 +35,67 @@
             name="idade"
             class="form-control-sm form-control"
             type="text"
+            required
           />
         </div>
         <div class="form-group">
           Sexo
-          <input name="sexo" class="form-control-sm form-control" type="text" />
+          <select name="sexo" class="form-control-sm form-control" required>
+            <option value="" selected disabled>Selecione</option>
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+          </select>
         </div>
         <div class="form-group">
           Nível de atividade
-          <input
+          <select
             name="atividade"
             class="form-control-sm form-control"
-            type="text"
-          />
+            required
+          >
+            <option value="" selected disabled>Selecione</option>
+            <option value="alto">Alto</option>
+            <option value="medio">Médio</option>
+            <option value="baixo">Baixo</option>
+          </select>
         </div>
       </div>
 
       <!-- Coluna da direita -->
       <div class="col-md-6">
         <div class="form-group">
-          Altura
+          Altura (cm)
           <input
             name="altura"
             class="form-control-sm form-control"
             type="text"
+            required
           />
         </div>
         <div class="form-group">
-          Peso
-          <input name="peso" class="form-control-sm form-control" type="text" />
+          Peso (kg)
+          <input
+            name="peso"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
         </div>
         <div class="form-group">
           Objetivo
-          <input
-            name="objetivo"
-            class="form-control-sm form-control"
-            type="text"
-          />
+          <select name="objetivo" class="form-control-sm form-control" required>
+            <option value="" selected disabled>Selecione</option>
+            <option value="ganho">Ganho</option>
+            <option value="manter">Manter</option>
+            <option value="perda">Perda</option>
+          </select>
         </div>
       </div>
     </div>
 
-    <!-- Botão Enviar ao centro -->
     <div class="row">
       <div class="col-md-12 text-center">
-        <button class="btn btn-info mt-3">Enviar</button>
+        <button class="btn btn-info mt-3" type="submit">Enviar</button>
         <a href="{% url 'base_usuarios' %}" class="btn btn-secondary mt-3 ml-2"
           >Pular</a
         >

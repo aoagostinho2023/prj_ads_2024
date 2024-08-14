@@ -7,22 +7,19 @@ def home(request):
 
 def calcular_tmb(peso, altura, idade, sexo):
     # Fórmulas de Mifflin-St Jeor
-    if sexo == 'M':  # Masculino
+    if sexo == 'M': 
         tmb = 10 * peso + 6.25 * altura - 5 * idade + 5
-    elif sexo == 'F':  # Feminino
-        tmb = 10 * peso + 6.25 * altura - 5 * idade - 161
     else:
-        raise ValueError("Sexo inválido. Use 'M' para masculino ou 'F' para feminino.")
+        tmb = 10 * peso + 6.25 * altura - 5 * idade - 161
     return tmb
 
 def ajustar_por_atividade(tmb, atividade):
-    # Fatores de atividade
     fatores_atividade = {
         'baixo': 1.2,
         'medio': 1.55,
         'alto': 1.9
     }
-    fator = fatores_atividade.get(atividade.lower(), 1.2)  # Padrão para 'baixo' se atividade não for reconhecida
+    fator = fatores_atividade.get(atividade.lower(), 1.2)
     return tmb * fator
 
 def calcular_imc(peso, altura_cm):
@@ -47,10 +44,10 @@ def usuarios(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         idade = int(request.POST.get('idade'))
-        sexo = request.POST.get('sexo').upper()  # Garantir que o sexo esteja em maiúsculo
+        sexo = request.POST.get('sexo').upper()
         altura = int(request.POST.get('altura'))
         peso = int(request.POST.get('peso'))
-        atividade = request.POST.get('atividade').lower()  # Garantir que a atividade esteja em minúsculo
+        atividade = request.POST.get('atividade').lower()
         objetivo = request.POST.get('objetivo')
 
         # Calcular TMB

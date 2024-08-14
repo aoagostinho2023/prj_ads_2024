@@ -1,19 +1,19 @@
 {% extends 'pages/base.html' %} {% load static %} {% block conteudo %}
 <div class="container">
   <h1 style="text-align: center">Base de usuários</h1>
-  <table class="table table-bordered table-striped">
+  <table style="text-align: center" class="table table-bordered table-striped">
     <tr>
       <th>Matrícula</th>
       <th>Nome</th>
       <th>Idade</th>
       <th>Sexo</th>
-      <th>Altura</th>
-      <th>Peso</th>
+      <th>Altura (cm)</th>
+      <th>Peso (kg)</th>
       <th>Nível de Atividade</th>
       <th>Objetivo</th>
       <th>IMC</th>
-      <th>Enquadramento do IMC</th>
-      <th>Gasto Calórico Diário</th>
+      <th>Enquadramento IMC</th>
+      <th>Gasto Calórico Estimado (Dia)</th>
     </tr>
     {% for usuario in usuarios %}
     <tr>
@@ -31,5 +31,13 @@
     </tr>
     {% endfor %}
   </table>
+
+  <div style="text-align: center">
+    <img
+      src="{% static 'images/imc.jpg' %}"
+      alt="IMC"
+      style="width: 30%; height: auto"
+    />
+  </div>
 </div>
 {% endblock %}
