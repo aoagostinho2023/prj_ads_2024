@@ -21,5 +21,7 @@ from app_nutrimax import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('pages/listagem_usuarios/', views.usuarios, name= 'listagem_usuarios'),
-    path('pages/base_usuarios/', views.base_usuarios, name= 'base_usuarios')
+    path('pages/base_usuarios/', views.base_usuarios, name= 'base_usuarios'),
+    path('pages/recomendacao_nutricional/', views.recomendacao_nutricional, name= 'recomendacao_nutricional'),
+    path('pages/recomendacao_nutricional/<int:usuario_id>/', views.recomendacao_nutricional, name='recomendacao_nutricional_com_usuario'),
 ]

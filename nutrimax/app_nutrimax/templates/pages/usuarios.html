@@ -14,6 +14,7 @@
       <th>IMC</th>
       <th>Enquadramento IMC</th>
       <th>Gasto Calórico Estimado (Dia)</th>
+      <th>Recomendação Nutricional</th>
     </tr>
     {% for usuario in usuarios %}
     <tr>
@@ -28,6 +29,17 @@
       <td>{{usuario.imc}}</td>
       <td>{{usuario.imc_stat}}</td>
       <td>{{usuario.tmb}}</td>
+      <td>
+        <a
+          href="{% url 'recomendacao_nutricional_com_usuario' usuario.id_usuario %}"
+        >
+          <img
+            src="{% static 'images/nutrition.png' %}"
+            alt="IMC"
+            style="width: 10%; height: auto"
+          />
+        </a>
+      </td>
     </tr>
     {% endfor %}
   </table>

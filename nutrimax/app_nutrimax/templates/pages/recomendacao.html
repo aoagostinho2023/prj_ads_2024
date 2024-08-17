@@ -1,0 +1,82 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block conteudo %}
+<div class="container">
+  <h1 style="text-align: center">Recomendação Nutricional</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="usuario">Selecione o Usuário</label>
+        <select name="usuario_id" class="form-control d-inline-block w-auto mr-3" required>
+          <option value="" disabled {% if not usuario_selecionado %}selected{% endif %}>Selecione</option>
+          {% for usuario in usuarios %}
+          <option value="{{ usuario.id_usuario }}" {% if usuario.id_usuario|stringformat:"s" == usuario_selecionado|stringformat:"s" %}selected{% endif %}>
+              {{ usuario.nome }}
+          </option>
+          {% endfor %}
+      </select>
+
+        <button type="submit" class="btn btn-primary">Ver Recomendação</button>
+    </div>
+</form>
+
+{% if tmb %}
+  <div class="mt-4">
+    <h4>Gasto Calórico Diário:</h4>
+    <p>{{ tmb }} calorias</p>
+
+    <h4>Recomendação por Objetivo:</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Objetivo</th>
+          <th>Calorias</th>
+          <th>Carboidratos (g)</th>
+          <th>Proteínas (g)</th>
+          <th>Gorduras (g)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ganhar peso (+15%)</td>
+          <td>{{ macros_ganhar_peso.calorias|floatformat:2 }}</td>
+          <td>{{ macros_ganhar_peso.carboidratos|floatformat:2 }}</td>
+          <td>{{ macros_ganhar_peso.proteinas|floatformat:2 }}</td>
+          <td>{{ macros_ganhar_peso.gorduras|floatformat:2 }}</td>
+        </tr>
+        <tr>
+          <td>Manter peso</td>
+          <td>{{ macros_manter_peso.calorias|floatformat:2 }}</td>
+          <td>{{ macros_manter_peso.carboidratos|floatformat:2 }}</td>
+          <td>{{ macros_manter_peso.proteinas|floatformat:2 }}</td>
+          <td>{{ macros_manter_peso.gorduras|floatformat:2 }}</td>
+        </tr>
+        <tr>
+          <td>Perder peso (-15%)</td>
+          <td>{{ macros_perder_peso.calorias|floatformat:2 }}</td>
+          <td>{{ macros_perder_peso.carboidratos|floatformat:2 }}</td>
+          <td>{{ macros_perder_peso.proteinas|floatformat:2 }}</td>
+          <td>{{ macros_perder_peso.gorduras|floatformat:2 }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div>
+      Calorias por macro: 50% Carboidratos, 30% Proteinas, 20% Gorduras
+    </div>
+    <br>
+    <div class="text-muted">
+      Os valores acima se referem à gramas do macronutriente e não do alimento pesado.
+    </div>
+    <div class="text-muted">
+      Por exemplo: 100g de arroz branco cozido contém 28.1g de carboidratos.
+    </div>
+    <div class="text-muted">
+      Consulte sempre um Nutricionista
+    </div>
+  </div>
+{% endif %}
+</div>
+
+{% endblock %}

@@ -86,3 +86,64 @@ def base_usuarios(request):
     }
 
     return render(request, 'pages/usuarios.html', usuarios)
+
+
+def recomendacao_nutricional(request, usuario_id=None):
+    usuarios = Usuario.objects.all()
+    tmb = None
+    macros_ganhar_peso = None
+    macros_perder_peso = None
+    macros_manter_peso = None
+
+    if request.method == 'POST':
+        usuario_id = request.POST.get('usuario_id')
+        if usuario_id:
+            usuario = Usuario.objects.get(id_usuario=usuario_id)
+            tmb = usuario.tmb
+
+            if tmb:
+                calorias_ganhar_peso = tmb * 1.15
+                calorias_perder_peso = tmb * 0.85
+                calorias_manter_peso = tmb
+
+                macros_ganhar_peso = calcular_macros(calorias_ganhar_peso)
+                macros_perder_peso = calcular_macros(calorias_perder_peso)
+                macros_manter_peso = calcular_macros(calorias_manter_peso)
+
+    elif usuario_id:
+        usuario = Usuario.objects.get(id_usuario=usuario_id)
+        tmb = usuario.tmb
+
+        if tmb:
+            calorias_ganhar_peso = tmb * 1.15
+            calorias_perder_peso = tmb * 0.85
+            calorias_manter_peso = tmb
+
+            macros_ganhar_peso = calcular_macros(calorias_ganhar_peso)
+            macros_perder_peso = calcular_macros(calorias_perder_peso)
+            macros_manter_peso = calcular_macros(calorias_manter_peso)
+
+    context = {
+        'usuarios': usuarios,
+        'tmb': tmb,
+        'usuario_selecionado': usuario_id,
+        'macros_ganhar_peso': macros_ganhar_peso,
+        'macros_perder_peso': macros_perder_peso,
+        'macros_manter_peso': macros_manter_peso,
+    }
+
+    return render(request, 'pages/recomendacao.html', context)
+
+
+
+def calcular_macros(calorias):
+    gramas_carboidratos = (calorias * 0.5) / 4
+    gramas_proteinas = (calorias * 0.3) / 4
+    gramas_gorduras = (calorias * 0.2) / 9
+
+    return {
+        'calorias': calorias,
+        'carboidratos': gramas_carboidratos,
+        'proteinas': gramas_proteinas,
+        'gorduras': gramas_gorduras,
+    }
