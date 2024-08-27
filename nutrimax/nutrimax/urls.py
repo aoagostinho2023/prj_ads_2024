@@ -24,4 +24,6 @@ urlpatterns = [
     path('pages/base_usuarios/', views.base_usuarios, name= 'base_usuarios'),
     path('pages/recomendacao_nutricional/', views.recomendacao_nutricional, name= 'recomendacao_nutricional'),
     path('pages/recomendacao_nutricional/<int:usuario_id>/', views.recomendacao_nutricional, name='recomendacao_nutricional_com_usuario'),
+    path('pages/alimentos/', views.alimentos, name= 'alimentos'),
+    path('pages/cadastra_alimentos/', views.cadastra_alimentos, name= 'cadastra_alimentos'),
 ]

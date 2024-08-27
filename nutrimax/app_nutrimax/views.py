@@ -1,9 +1,40 @@
 from django.shortcuts import render
-from .models import Usuario
+from .models import *
 
 # Create your views here.
 def home(request):
     return render(request,'pages/home.html')
+
+def alimentos(request):
+    alimentos = {
+        'alimentos': Alimentos.objects.all().order_by('nome')
+    }
+
+    return render(request, 'pages/alimentos.html', alimentos)
+
+def cadastra_alimentos(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        calorias = float(request.POST.get('calorias'))
+        carboidratos = float(request.POST.get('carboidratos'))
+        proteinas = float(request.POST.get('proteinas'))
+        gorduras = float(request.POST.get('gorduras'))
+
+        # Criar e salvar o novo usuário
+        novo_alimento = Alimentos()
+        novo_alimento.nome = nome
+        novo_alimento.calorias = calorias
+        novo_alimento.carboidratos = carboidratos
+        novo_alimento.proteinas = proteinas
+        novo_alimento.gorduras = gorduras
+        novo_alimento.save()
+        
+
+    alimentos = {
+        'alimentos': Alimentos.objects.all().order_by('nome')
+    }
+
+    return render(request, 'pages/alimentos.html', alimentos)
 
 def calcular_tmb(peso, altura, idade, sexo):
     # Fórmulas de Mifflin-St Jeor

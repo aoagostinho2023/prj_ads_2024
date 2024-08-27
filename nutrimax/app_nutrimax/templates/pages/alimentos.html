@@ -1,0 +1,139 @@
+{% extends 'pages/base.html' %} {% load static %} {% block conteudo %}
+
+<h2 style="text-align: center">Cadastrar alimento</h2>
+
+<!-- Formulario -->
+<form action="{% url 'cadastra_alimentos' %}" method="post">
+  {% csrf_token %}
+  <div class="container">
+    <div class="row align-items-end">
+      <div class="col">
+        <div class="form-group">
+          Alimento
+          <input
+            name="nome"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          Calorias (Para 100g)
+          <input
+            name="calorias"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          Carboidratos (Para 100g)
+          <input
+            name="carboidratos"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          Proteínas (Para 100g)
+          <input
+            name="proteinas"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          Gorduras (Para 100g)
+          <input
+            name="gorduras"
+            class="form-control-sm form-control"
+            type="text"
+            required
+          />
+        </div>
+      </div>
+      <div class="col">
+        <button class="btn btn-info mt-3" type="submit">Cadastrar</button>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- Fim do Formulario -->
+<br />
+
+<div style="text-align: center" class="container">
+  <img
+    src="{% static 'images/nutrition.png' %}"
+    alt="Nutri Pyramid"
+    style="width: 5%; height: auto"
+  />
+</div>
+<br />
+
+<div class="container">
+  <h2 style="text-align: center">Alimentos cadastrados</h2>
+
+  <!-- Campo de busca -->
+  <input
+    id="search"
+    type="text"
+    class="form-control mb-3"
+    placeholder="Buscar alimentos..."
+  />
+
+  <table
+    id="alimentosTable"
+    style="text-align: center"
+    class="table table-bordered table-striped"
+  >
+    <thead>
+      <tr>
+        <th>Alimento (100g)</th>
+        <th>Calorias</th>
+        <th>Carboidratos</th>
+        <th>Proteínas</th>
+        <th>Gorduras</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for alimento in alimentos %}
+      <tr>
+        <td>{{alimento.nome}}</td>
+        <td>{{alimento.calorias}}</td>
+        <td>{{alimento.carboidratos}}</td>
+        <td>{{alimento.proteinas}}</td>
+        <td>{{alimento.gorduras}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Script para filtrar a tabela com base na busca
+  document.getElementById("search").addEventListener("keyup", function () {
+    var searchValue = this.value.toLowerCase();
+    var rows = document.querySelectorAll("#alimentosTable tbody tr");
+
+    rows.forEach(function (row) {
+      var alimento = row.cells[0].textContent.toLowerCase();
+      if (alimento.includes(searchValue)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  });
+</script>
+
+{% endblock %}

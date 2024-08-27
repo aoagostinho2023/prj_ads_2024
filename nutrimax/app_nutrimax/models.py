@@ -30,3 +30,13 @@ class Usuario(models.Model):
     tmb = models.IntegerField()
     imc = models.IntegerField()
     imc_stat = models.TextField(max_length=255)
+
+
+class Alimentos(models.Model):
+    id_alimento = models.AutoField(primary_key=True)
+    nome = models.TextField(max_length=255)
+    calorias = models.TextField(max_length=255)
+    carboidratos = models.TextField(max_length=255)
+    proteinas = models.TextField(max_length=255)
+    gorduras = models.TextField(max_length=255)
+    
