@@ -19,6 +19,7 @@ from django.urls import path
 from app_nutrimax import views
 
 urlpatterns = [
+    path('admin/',admin.site.urls),
     path('', views.home, name='home'),
     path('pages/listagem_usuarios/', views.usuarios, name= 'listagem_usuarios'),
     path('pages/base_usuarios/', views.base_usuarios, name= 'base_usuarios'),
