@@ -1,0 +1,284 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+{% block conteudo %}
+<div style="text-align: center" class="container">
+  <img
+    src="{% static 'images/cardapio.png' %}"
+    alt="Nutri Pyramid"
+    style="width: 8%; height: auto"
+  />
+</div>
+<div class="container">
+  <h1 style="text-align: center">Criador de Cardápio</h1>
+
+  <!-- Formulário para selecionar usuário -->
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="usuario" style="font-size: 1.25rem; font-weight: bold;">1. Selecione o Usuário</label>
+      <select name="usuario_id" class="form-control d-inline-block w-auto mr-3" required>
+        <option value="" disabled {% if not usuario_selecionado %}selected{% endif %}>Selecione</option>
+        {% for usuario in usuarios %}
+        <option value="{{ usuario.id_usuario }}" {% if usuario.id_usuario|stringformat:"s" == usuario_selecionado|stringformat:"s" %}selected{% endif %}>
+            {{ usuario.nome }}
+        </option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary">Ver Meta</button>
+    </div>
+  </form>
+
+  {% if macros %}
+  <div class="mt-4">
+    <h5>Meta para o objetivo: 
+      <span class="text-primary">{{ objetivo_usuario|title }}</span>
+    </h5>
+    <table class="table table-striped" id="recomendacaoTable">
+      <thead>
+        <tr>
+          <th>Calorias</th>
+          <th>Carboidratos (g)</th>
+          <th>Proteínas (g)</th>
+          <th>Gorduras (g)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-initial="{{ macros.calorias|floatformat:2 }}" id="recomendacao-calorias">
+            {{ macros.calorias|floatformat:2 }}
+          </td>
+          <td data-initial="{{ macros.carboidratos|floatformat:2 }}" id="recomendacao-carboidratos">
+            {{ macros.carboidratos|floatformat:2 }}
+          </td>
+          <td data-initial="{{ macros.proteinas|floatformat:2 }}" id="recomendacao-proteinas">
+            {{ macros.proteinas|floatformat:2 }}
+          </td>
+          <td data-initial="{{ macros.gorduras|floatformat:2 }}" id="recomendacao-gorduras">
+            {{ macros.gorduras|floatformat:2 }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Divisão em duas colunas -->
+  <div class="row mt-5">
+    <!-- Tabela de alimentos (esquerda) -->
+    <div class="col-md-6">
+      <label for="alimentos" style="font-size: 1.25rem; font-weight: bold;">2. Selecione os alimentos</label>
+      <input
+        id="search"
+        type="text"
+        class="form-control mb-3"
+        placeholder="Buscar alimentos..."
+      />
+
+      <table
+        id="alimentosTable"
+        class="table table-bordered table-striped"
+        style="text-align: center;"
+      >
+        <thead>
+          <tr>
+            <th>Alimento (100g)</th>
+            <th>Calorias</th>
+            <th>Carboidratos</th>
+            <th>Proteínas</th>
+            <th>Gorduras</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for alimento in alimentos %}
+          <tr>
+            <td>{{ alimento.nome }}</td>
+            <td>{{ alimento.calorias }}</td>
+            <td>{{ alimento.carboidratos }}</td>
+            <td>{{ alimento.proteinas }}</td>
+            <td>{{ alimento.gorduras }}</td>
+            <td>
+              <button class="btn btn-success btn-sm selecionar-alimento" 
+                      data-nome="{{ alimento.nome }}"
+                      data-calorias="{{ alimento.calorias }}"
+                      data-carboidratos="{{ alimento.carboidratos }}"
+                      data-proteinas="{{ alimento.proteinas }}"
+                      data-gorduras="{{ alimento.gorduras }}">
+                Adicionar
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabela de alimentos selecionados (direita) -->
+    <div class="col-md-6">
+      <label style="font-size: 1.25rem; font-weight: bold;">3. Alimentos Selecionados</label>
+      <table
+        id="alimentosSelecionados"
+        class="table table-bordered table-striped"
+        style="text-align: center;"
+      >
+        <thead>
+          <tr>
+            <th>Alimento</th>
+            <th>Calorias</th>
+            <th>Carboidratos</th>
+            <th>Proteínas</th>
+            <th>Gorduras</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Alimentos selecionados serão adicionados aqui -->
+        </tbody>
+      </table>
+      <!-- Botão de impressão alinhado à direita -->
+      <div style="text-align: right;">
+        <button id="printTable" class="btn btn-secondary mt-3">Imprimir Tabela</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  // Filtrar tabela de alimentos
+  document.getElementById("search").addEventListener("keyup", function () {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#alimentosTable tbody tr");
+
+    rows.forEach(function (row) {
+      const alimento = row.cells[0].textContent.toLowerCase();
+      if (alimento.includes(searchValue)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  });
+
+  // Função para atualizar a tabela de recomendação
+  function atualizarRecomendacao(valor, tipo, adicionar) {
+    const elemento = document.getElementById(`recomendacao-${tipo}`);
+    const valorAtual = parseFloat(elemento.textContent);
+    const novoValor = adicionar
+      ? valorAtual - parseFloat(valor)
+      : valorAtual + parseFloat(valor);
+
+    elemento.textContent = novoValor.toFixed(2);
+
+    // Verificar se o novo valor é menor ou igual a 0
+    if (novoValor <= 0) {
+      elemento.style.color = "red";
+      //alert(`Sua meta de ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} foi atingida!`);
+    } else {
+      elemento.style.color = ""; // Voltar ao estilo padrão
+    }
+  }
+
+  // Adicionar alimentos selecionados à tabela da direita
+  document.querySelectorAll(".selecionar-alimento").forEach((button) => {
+    button.addEventListener("click", function () {
+      const nome = this.dataset.nome;
+      const calorias = this.dataset.calorias;
+      const carboidratos = this.dataset.carboidratos;
+      const proteinas = this.dataset.proteinas;
+      const gorduras = this.dataset.gorduras;
+
+      // Criar nova linha na tabela de alimentos selecionados
+      const tabelaSelecionados = document.querySelector("#alimentosSelecionados tbody");
+      const novaLinha = document.createElement("tr");
+
+      novaLinha.innerHTML = `
+        <td>${nome}</td>
+        <td>${calorias}</td>
+        <td>${carboidratos}</td>
+        <td>${proteinas}</td>
+        <td>${gorduras}</td>
+        <td>
+          <button class="btn btn-danger btn-sm remover-alimento">Remover</button>
+        </td>
+      `;
+
+      tabelaSelecionados.appendChild(novaLinha);
+
+      // Atualizar recomendação
+      atualizarRecomendacao(calorias, "calorias", true);
+      atualizarRecomendacao(carboidratos, "carboidratos", true);
+      atualizarRecomendacao(proteinas, "proteinas", true);
+      atualizarRecomendacao(gorduras, "gorduras", true);
+
+      // Adicionar evento de remoção ao botão "Remover"
+      novaLinha.querySelector(".remover-alimento").addEventListener("click", function () {
+        tabelaSelecionados.removeChild(novaLinha);
+
+        // Reverter recomendação
+        atualizarRecomendacao(calorias, "calorias", false);
+        atualizarRecomendacao(carboidratos, "carboidratos", false);
+        atualizarRecomendacao(proteinas, "proteinas", false);
+        atualizarRecomendacao(gorduras, "gorduras", false);
+      });
+    });
+  });
+
+  // Função para imprimir a tabela de alimentos selecionados
+  document.getElementById("printTable").addEventListener("click", function () {
+    // Obter nome do usuário
+    const usuarioSelecionado = document.querySelector("select[name='usuario_id'] option:checked").textContent;
+
+    // Obter valores iniciais da recomendação nutricional
+    const calorias = document.querySelector("#recomendacao-calorias").getAttribute("data-initial");
+    const carboidratos = document.querySelector("#recomendacao-carboidratos").getAttribute("data-initial");
+    const proteinas = document.querySelector("#recomendacao-proteinas").getAttribute("data-initial");
+    const gorduras = document.querySelector("#recomendacao-gorduras").getAttribute("data-initial");
+
+    // Obter a tabela de alimentos selecionados
+    const tabela = document.getElementById("alimentosSelecionados").outerHTML;
+
+    // Criar nova janela para impressão
+    const janelaImpressao = window.open("", "_blank");
+    janelaImpressao.document.write(`
+      <html>
+        <head>
+          <title>Tabela de Alimentos Selecionados para ${usuarioSelecionado}</title>
+          <style>
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+              font-size: 18px;
+              text-align: left;
+            }
+            table, th, td {
+              border: 1px solid black;
+            }
+            th, td {
+              padding: 12px;
+            }
+            .recommendation {
+              font-size: 18px;
+              margin: 20px 0;
+            }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align: center;">Tabela de Alimentos Selecionados para ${usuarioSelecionado}</h2>
+          <div class="recommendation">
+            <h3>Recomendação Nutricional Inicial:</h3>
+            <p><strong>Calorias:</strong> ${calorias} kcal</p>
+            <p><strong>Carboidratos:</strong> ${carboidratos} g</p>
+            <p><strong>Proteínas:</strong> ${proteinas} g</p>
+            <p><strong>Gorduras:</strong> ${gorduras} g</p>
+          </div>
+          ${tabela}
+        </body>
+      </html>
+    `);
+    janelaImpressao.document.close();
+    janelaImpressao.print();
+  });
+</script>
+
+{% endblock %}

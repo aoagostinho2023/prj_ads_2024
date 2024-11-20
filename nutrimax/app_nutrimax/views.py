@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from .models import *
 
 # Create your views here.
@@ -178,3 +179,54 @@ def calcular_macros(calorias):
         'proteinas': gramas_proteinas,
         'gorduras': gramas_gorduras,
     }
+
+
+def criador_cardapio(request, usuario_id=None):
+    usuarios = Usuario.objects.all()
+    tmb = None
+    macros = None
+    objetivo_usuario = None
+
+    if request.method == 'POST':
+        usuario_id = request.POST.get('usuario_id')
+        if usuario_id:
+            usuario = Usuario.objects.get(id_usuario=usuario_id)
+            tmb = usuario.tmb
+            objetivo_usuario = usuario.objetivo
+
+            if tmb:
+                if objetivo_usuario == 'ganho':
+                    calorias = tmb * 1.15
+                elif objetivo_usuario == 'perda':
+                    calorias = tmb * 0.85
+                else:  # "manter"
+                    calorias = tmb
+
+                macros = calcular_macros(calorias)
+
+    elif usuario_id:
+        usuario = Usuario.objects.get(id_usuario=usuario_id)
+        tmb = usuario.tmb
+        objetivo_usuario = usuario.objetivo
+
+        if tmb:
+            if objetivo_usuario == 'ganho':
+                calorias = tmb * 1.15
+            elif objetivo_usuario == 'perda':
+                calorias = tmb * 0.85
+            else:  # "manter"
+                calorias = tmb
+
+            macros = calcular_macros(calorias)
+
+
+    context = {
+        'usuarios': usuarios,
+        'tmb': tmb,
+        'usuario_selecionado': usuario_id,
+        'macros': macros,
+        'objetivo_usuario': objetivo_usuario,
+        'alimentos': Alimentos.objects.all().order_by('nome')
+    }
+
+    return render(request, 'pages/criador_cardapio.html', context)
