@@ -1,0 +1,90 @@
+{% extends 'pages/base.html' %} {% block conteudo %}
+<div class="container mt-4">
+  <h1 class="text-center">Cardápio de {{ usuario.nome }}</h1>
+  <h5 class="text-center text-muted">
+    Objetivo: <span class="text-primary">{{ usuario.objetivo|title }}</span>
+  </h5>
+
+  {% if cardapio.exists %}
+  <div class="table-responsive mt-4">
+    <table
+      class="table table-striped table-hover align-middle text-center"
+      id="cardapioTable"
+    >
+      <thead class="table-dark">
+        <tr>
+          <th>Alimento</th>
+          <th>Quantidade (g)</th>
+          <th>Calorias</th>
+          <th>Carboidratos</th>
+          <th>Proteínas</th>
+          <th>Gorduras</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cardapio %}
+        <tr>
+          <td>{{ item.alimento.nome }}</td>
+          <td>{{ item.quantidade }}</td>
+          <td>{{ item.calorias_totais|floatformat:2 }}</td>
+          <td>{{ item.carboidratos_totais|floatformat:2 }}</td>
+          <td>{{ item.proteinas_totais|floatformat:2 }}</td>
+          <td>{{ item.gorduras_totais|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- Botão para imprimir a tabela -->
+  <div class="text-center mt-4">
+    <button id="printTable" class="btn btn-secondary">Imprimir Cardápio</button>
+  </div>
+  {% else %}
+  <div class="alert alert-warning text-center mt-4">
+    <strong>Não há cardápio salvo para este usuário.</strong>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  // Função para imprimir a tabela de cardápio
+  document.getElementById("printTable").addEventListener("click", function () {
+    // Obter o nome do usuário
+    const usuarioNome = "{{ usuario.nome }}";
+
+    // Obter a tabela do cardápio
+    const tabela = document.getElementById("cardapioTable").outerHTML;
+
+    // Criar uma nova janela para impressão
+    const janelaImpressao = window.open("", "_blank");
+    janelaImpressao.document.write(`
+      <html>
+        <head>
+          <title>Cardápio de ${usuarioNome}</title>
+          <style>
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+              font-size: 18px;
+              text-align: center;
+            }
+            table, th, td {
+              border: 1px solid black;
+            }
+            th, td {
+              padding: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align: center;">Cardápio de ${usuarioNome}</h2>
+          ${tabela}
+        </body>
+      </html>
+    `);
+    janelaImpressao.document.close();
+    janelaImpressao.print();
+  });
+</script>
+{% endblock %}

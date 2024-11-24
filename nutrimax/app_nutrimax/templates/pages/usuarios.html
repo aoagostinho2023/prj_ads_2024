@@ -14,21 +14,24 @@
       <th>IMC</th>
       <th>Enquadramento IMC</th>
       <th>Gasto Calórico Estimado (Dia)</th>
-      <th>Recomendação Nutricional</th>
+      <th style="width: 5%">Recomendação Nutricional</th>
+      <!-- Largura definida -->
+      <th style="width: 5%">Visualizar Cardápio</th>
+      <!-- Largura definida -->
     </tr>
     {% for usuario in usuarios %}
     <tr>
-      <td>{{usuario.id_usuario}}</td>
-      <td>{{usuario.nome}}</td>
-      <td>{{usuario.idade}}</td>
-      <td>{{usuario.sexo}}</td>
-      <td>{{usuario.altura}}</td>
-      <td>{{usuario.peso}}</td>
-      <td>{{usuario.atividade}}</td>
-      <td>{{usuario.objetivo}}</td>
-      <td>{{usuario.imc}}</td>
-      <td>{{usuario.imc_stat}}</td>
-      <td>{{usuario.tmb}}</td>
+      <td>{{ usuario.id_usuario }}</td>
+      <td>{{ usuario.nome }}</td>
+      <td>{{ usuario.idade }}</td>
+      <td>{{ usuario.sexo }}</td>
+      <td>{{ usuario.altura }}</td>
+      <td>{{ usuario.peso }}</td>
+      <td>{{ usuario.atividade }}</td>
+      <td>{{ usuario.objetivo }}</td>
+      <td>{{ usuario.imc }}</td>
+      <td>{{ usuario.imc_stat }}</td>
+      <td>{{ usuario.tmb }}</td>
       <td>
         <a
           href="{% url 'recomendacao_nutricional_com_usuario' usuario.id_usuario %}"
@@ -36,7 +39,16 @@
           <img
             src="{% static 'images/nutrition.png' %}"
             alt="IMC"
-            style="width: 10%; height: auto"
+            style="width: 20%; height: auto"
+          />
+        </a>
+      </td>
+      <td>
+        <a href="{% url 'visualizar_cardapio' usuario.id_usuario %}">
+          <img
+            src="{% static 'images/cardapio.png' %}"
+            alt="CARD"
+            style="width: 42%; height: auto"
           />
         </a>
       </td>

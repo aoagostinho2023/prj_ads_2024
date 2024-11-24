@@ -27,5 +27,7 @@ urlpatterns = [
     path('pages/recomendacao_nutricional/<int:usuario_id>/', views.recomendacao_nutricional, name='recomendacao_nutricional_com_usuario'),
     path('pages/alimentos/', views.alimentos, name= 'alimentos'),
     path('pages/cadastra_alimentos/', views.cadastra_alimentos, name= 'cadastra_alimentos'),
-    path('criador_cardapio/', views.criador_cardapio, name='criador_cardapio')
+    path('criador_cardapio/', views.criador_cardapio, name='criador_cardapio'),
+    path('salvar_cardapio/', views.salvar_cardapio, name='salvar_cardapio'),
+    path('visualizar_cardapio/<int:usuario_id>/', views.visualizar_cardapio, name='visualizar_cardapio')
 ]

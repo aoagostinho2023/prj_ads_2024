@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class Usuario(models.Model):
     SEXO_CHOICES = [
         ('M', 'Masculino'),
@@ -39,4 +38,29 @@ class Alimentos(models.Model):
     carboidratos = models.TextField(max_length=255)
     proteinas = models.TextField(max_length=255)
     gorduras = models.TextField(max_length=255)
-    
+
+
+# Novo modelo para armazenar o cardápio do usuário
+class Cardapio(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="cardapios")
+    alimento = models.ForeignKey(Alimentos, on_delete=models.CASCADE, related_name="cardapios")
+    quantidade = models.FloatField(help_text="Quantidade em gramas", default=100)
+
+    @property
+    def calorias_totais(self):
+        return (float(self.alimento.calorias) * self.quantidade) / 100
+
+    @property
+    def carboidratos_totais(self):
+        return (float(self.alimento.carboidratos) * self.quantidade) / 100
+
+    @property
+    def proteinas_totais(self):
+        return (float(self.alimento.proteinas) * self.quantidade) / 100
+
+    @property
+    def gorduras_totais(self):
+        return (float(self.alimento.gorduras) * self.quantidade) / 100
+
+    def __str__(self):
+        return f"Cardápio de {self.usuario.nome} - {self.alimento.nome} ({self.quantidade}g)"

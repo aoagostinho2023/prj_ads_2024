@@ -135,9 +135,19 @@
         </tbody>
       </table>
       <!-- Botão de impressão alinhado à direita -->
+      <!--ajuste 19:00-->
       <div style="text-align: right;">
+        <!-- Botão de Imprimir Tabela -->
         <button id="printTable" class="btn btn-secondary mt-3">Imprimir Tabela</button>
+      
+        <!-- Formulário para salvar o cardápio -->
+        <form id="formSalvarCardapio" action="{% url 'salvar_cardapio' %}" style="display: inline;">
+          {% csrf_token %}
+          <input type="hidden" name="cardapio" id="cardapioData" />
+          <button type="button" id="salvarCardapioBtn" class="btn btn-primary mt-3">Salvar Cardápio</button>
+      </form>
       </div>
+      <!--fim do ajuste 19:00-->
     </div>
   </div>
   {% endif %}
@@ -172,7 +182,6 @@
     // Verificar se o novo valor é menor ou igual a 0
     if (novoValor <= 0) {
       elemento.style.color = "red";
-      //alert(`Sua meta de ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} foi atingida!`);
     } else {
       elemento.style.color = ""; // Voltar ao estilo padrão
     }
@@ -279,6 +288,75 @@
     janelaImpressao.document.close();
     janelaImpressao.print();
   });
+
+  // Lógica para salvar o cardápio usando AJAX
+  document.getElementById("salvarCardapioBtn").addEventListener("click", function () {
+    // Selecionar alimentos da tabela
+    const alimentosSelecionados = [];
+    const linhas = document.querySelectorAll("#alimentosSelecionados tbody tr");
+
+    linhas.forEach((linha) => {
+      const nome = linha.cells[0].textContent.trim();
+      const calorias = linha.cells[1].textContent.trim();
+      const carboidratos = linha.cells[2].textContent.trim();
+      const proteinas = linha.cells[3].textContent.trim();
+      const gorduras = linha.cells[4].textContent.trim();
+
+      alimentosSelecionados.push({
+        nome,
+        calorias: parseFloat(calorias),
+        carboidratos: parseFloat(carboidratos),
+        proteinas: parseFloat(proteinas),
+        gorduras: parseFloat(gorduras),
+      });
+    });
+
+    if (alimentosSelecionados.length === 0) {
+      alert("Nenhum alimento selecionado para salvar.");
+      return;
+    }
+
+    const usuarioId = document.querySelector("select[name='usuario_id']").value;
+    if (!usuarioId) {
+      alert("Por favor, selecione um usuário antes de salvar o cardápio.");
+      return;
+    }
+
+    const cardapioData = {
+      usuario_id: usuarioId,
+      alimentos: alimentosSelecionados,
+    };
+
+    // Fazer requisição AJAX para salvar o cardápio
+    fetch("{% url 'salvar_cardapio' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+      },
+      body: JSON.stringify(cardapioData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Erro ao salvar o cardápio.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.message) {
+          // Exibir mensagem de sucesso como popup
+          alert(data.message);
+        } else if (data.error) {
+          // Exibir mensagem de erro
+          alert(data.error);
+        }
+      })
+      .catch((error) => {
+        alert("Ocorreu um erro: " + error.message);
+      });
+  });
 </script>
+
+
 
 {% endblock %}

@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import *
+import json
 
 # Create your views here.
 def home(request):
@@ -230,3 +231,69 @@ def criador_cardapio(request, usuario_id=None):
     }
 
     return render(request, 'pages/criador_cardapio.html', context)
+
+def salvar_cardapio(request):
+    if request.method == 'POST':
+        try:
+            # Parse do JSON recebido diretamente no corpo da requisição
+            cardapio_data = json.loads(request.body)
+            usuario_id = cardapio_data.get('usuario_id')
+            alimentos = cardapio_data.get('alimentos', [])
+
+            # Validar se o usuário existe
+            usuario = Usuario.objects.filter(id_usuario=usuario_id).first()
+            if not usuario:
+                return JsonResponse({'error': 'Usuário não encontrado.'}, status=400)
+
+            # Verificar se já existe cardápio salvo para o usuário
+            cardapios_existentes = Cardapio.objects.filter(usuario=usuario)
+            if cardapios_existentes.exists():
+                # Deletar todos os registros anteriores
+                cardapios_existentes.delete()
+
+            # Salvar cada alimento na tabela Cardapio
+            for item in alimentos:
+                nome = item.get('nome')
+                quantidade = item.get('quantidade', 100)  # Quantidade padrão: 100g
+                alimento = Alimentos.objects.filter(nome=nome).first()
+
+                if alimento:
+                    Cardapio.objects.create(
+                        usuario=usuario,
+                        alimento=alimento,
+                        quantidade=quantidade
+                    )
+
+            # Retornar uma resposta de sucesso
+            return JsonResponse({'message': 'Cardápio salvo com sucesso!'}, status=200)
+
+        except json.JSONDecodeError:
+            # Erro ao interpretar o JSON
+            return JsonResponse({'error': 'Erro no formato do JSON.'}, status=400)
+
+        except Exception as e:
+            # Tratar erros gerais
+            return JsonResponse({'error': str(e)}, status=500)
+
+    # Caso o método não seja POST
+    return JsonResponse({'error': 'Método não permitido.'}, status=405)
+
+def visualizar_cardapio(request, usuario_id):
+    try:
+        # Buscar o usuário
+        usuario = Usuario.objects.get(id_usuario=usuario_id)
+
+        # Buscar os alimentos do cardápio do usuário
+        cardapio = Cardapio.objects.filter(usuario=usuario)
+
+        # Preparar os dados para o template
+        context = {
+            'usuario': usuario,
+            'cardapio': cardapio,
+        }
+
+        return render(request, 'pages/visualizar_cardapio.html', context)
+
+    except Usuario.DoesNotExist:
+        # Se o usuário não for encontrado, exibir mensagem de erro
+        return render(request, 'pages/erro.html', {'mensagem': 'Usuário não encontrado.'})
